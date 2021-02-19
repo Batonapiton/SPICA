@@ -144,7 +144,50 @@ namespace SPICA.Formats.GFL2.Motion
                 case "motion_3_2": name = "run"; break;
             }
 
-            return name;
+
+            return StandardMotion.ContainsKey(key) ? StandardMotion[key] : key;
+                //return name;
         }
+
+        public static Dictionary<string, string> StandardMotion = new Dictionary<string, string>() {
+            
+            { "FightingAction1", "idle" },
+            { "FightingAction9", "attack" },
+            {  "FightingAction10", "attack-2"},
+            {  "FightingAction11", "attack-3"},
+            {  "FightingAction12", "attack-4"},
+            {  "FightingAction13", "range-attack"},
+            {  "FightingAction14", "range-attack-2"},
+            {  "FightingAction15", "range-attack-3"},
+            {  "FightingAction16", "range-attack-4"},
+            {  "FightingAction17", "hit"},
+            {  "FightingAction18", "lost"},
+            { "PetAction5", "falling-asleep" },
+            {  "PetAction6", "sleepy" },
+            { "PetAction8", "sleeping" },
+            { "PetAction13", "happy" },
+            { "PetAction21", "happy-2" },
+            {  "MapAction3","walk" },
+            {  "MapAction4", "run"},
+        };
+
+        // public static Dictionary<string, string> StandardMotion = new Dictionary<string, string>() {
+        //     { "Motion_0", "idle"},
+        //     { "Motion_3", "jump"},
+        //     { "Motion_4", "airborn"},
+        //     { "Motion_5", "fall"},
+        //     { "Motion_6", "attack1"},
+        //     { "Motion_7", "attack1_1"},
+        //     { "Motion_9", "attack2"},
+        //     { "Motion_13","hit1@"},
+        //     { "Motion_14","hit2@"},
+        //     { "Motion_17", "faint"},
+        //     {"Motion_5_1", "sleep1@"},
+        //     {"Motion_7_1", "sleep2@"},
+        //     {"Motion_8_1", "wakeUp@"},
+        //     {"Motion_10_1", "celebrate"},
+        //     {"Motion_1_2", "walk"},
+        //     {"Motion_3_2", "run"}
+        // };
     }
 }

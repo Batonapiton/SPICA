@@ -84,7 +84,13 @@ namespace SPICA.WinForms.Formats
                         if (GFPackage.IsValidPackage(FS))
                         {
                             GFPackage.Header PackHeader = GFPackage.GetPackageHeader(FS);
-
+                            // foreach (var PackHeaderEntry in PackHeader.Entries)
+                            // {
+                            //     
+                            //     Console.WriteLine(PackHeaderEntry.Address);
+                            // }
+                            //
+                            // Console.WriteLine("---------");
                             switch (PackHeader.Magic)
                             {
                                 case "AD": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 1); break;
@@ -94,6 +100,134 @@ namespace SPICA.WinForms.Formats
                                 case "GR": Output = GFOWMapModel.OpenAsH3D(FS, PackHeader); break;
                                 case "MM": Output = GFOWCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, Skeleton); break;
+                                case "PT": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 0); break;
+                                case "PK":
+                                case "PB":
+                                    Output = GFPkmnSklAnim.OpenAsH3D(FS, PackHeader, Skeleton); break;
+                            }
+                        }
+                        else
+                        {
+                            switch (MagicNum)
+                            {
+                                case 0x15122117:
+                                    Output = new H3D();
+
+                                    Output.Models.Add(new GFModel(Reader, "Model").ToH3DModel());
+
+                                    break;
+
+                                case 0x15041213:
+                                    Output = new H3D();
+
+                                    Output.Textures.Add(new GFTexture(Reader).ToH3DTexture());
+
+                                    break;
+
+                                case 0x00010000: Output = new GFModelPack(Reader).ToH3D(); break;
+                                case 0x00060000:
+                                    if (Skeleton != null)
+                                    {
+                                        Output = new H3D();
+
+                                        GFMotion Motion = new GFMotion(Reader, 0);
+
+                                        H3DAnimation    SklAnim = Motion.ToH3DSkeletalAnimation(Skeleton);
+                                        H3DMaterialAnim MatAnim = Motion.ToH3DMaterialAnimation();
+                                        H3DAnimation    VisAnim = Motion.ToH3DVisibilityAnimation();
+
+                                        if (SklAnim != null) Output.SkeletalAnimations.Add(SklAnim);
+                                        if (MatAnim != null) Output.MaterialAnimations.Add(MatAnim);
+                                        if (VisAnim != null) Output.VisibilityAnimations.Add(VisAnim);
+                                    }
+
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Output;
+        }
+        public static H3D IdentifyAndOpen(string FileName, bool DeleteBadAnims, H3DDict<H3DBone> Skeleton = null)
+        {
+            //Formats that can by identified by extensions
+            string FilePath = Path.GetDirectoryName(FileName);
+
+            switch (Path.GetExtension(FileName).ToLower())
+            {
+                case ".smd": return new SMD(FileName).ToH3D(FilePath);
+                case ".obj": return new OBJ(FileName).ToH3D(FilePath);
+                case ".mbn":
+                    using (FileStream Input = new FileStream(FileName, FileMode.Open))
+                    {
+                        H3D BaseScene = H3D.Open(File.ReadAllBytes(FileName.Replace(".mbn", ".bch")));
+
+                        MBn ModelBinary = new MBn(new BinaryReader(Input), BaseScene);
+
+                        return ModelBinary.ToH3D();
+                    }
+            }
+
+            //Formats that can only be indetified by "magic numbers"
+            H3D Output = null;
+
+            using (FileStream FS = new FileStream(FileName, FileMode.Open))
+            {
+                if (FS.Length > 4)
+                {
+                    BinaryReader Reader = new BinaryReader(FS);
+
+                    uint MagicNum = Reader.ReadUInt32();
+
+                    FS.Seek(-4, SeekOrigin.Current);
+
+                    string Magic = Encoding.ASCII.GetString(Reader.ReadBytes(4));
+
+                    FS.Seek(0, SeekOrigin.Begin);
+
+                    if (Magic.StartsWith("BCH"))
+                    {
+                        return H3D.Open(Reader.ReadBytes((int)FS.Length));
+                    }
+                    else if (Magic.StartsWith("MOD"))
+                    {
+                        return LoadMTModel(Reader, FileName, Path.GetDirectoryName(FileName));
+                    }
+                    else if (Magic.StartsWith("TEX"))
+                    {
+                        return new MTTexture(Reader, Path.GetFileNameWithoutExtension(FileName)).ToH3D();
+                    }
+                    else if (Magic.StartsWith("MFX"))
+                    {
+                        MTShader = new MTShaderEffects(Reader);
+                    }
+                    else if (Magic.StartsWith("CGFX"))
+                    {
+                        return Gfx.Open(FS);
+                    }
+                    else
+                    {
+                        if (GFPackage.IsValidPackage(FS))
+                        {
+                            GFPackage.Header PackHeader = GFPackage.GetPackageHeader(FS);
+                            // foreach (var PackHeaderEntry in PackHeader.Entries)
+                            // {
+                            //     
+                            //     Console.WriteLine(PackHeaderEntry.Address);
+                            // }
+                            //
+                            // Console.WriteLine("---------");
+                            switch (PackHeader.Magic)
+                            {
+                                case "AD": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 1); break;
+                                case "BG": Output = GFL2OverWorld.OpenAsH3D(FS, PackHeader, Skeleton); break;
+                                case "BS": Output = GFBtlSklAnim.OpenAsH3D(FS, PackHeader, Skeleton); break;
+                                case "CM": Output = GFCharaModel.OpenAsH3D(FS, PackHeader); break;
+                                case "GR": Output = GFOWMapModel.OpenAsH3D(FS, PackHeader); break;
+                                case "MM": Output = GFOWCharaModel.OpenAsH3D(FS, PackHeader); break;
+                                case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, DeleteBadAnims, Skeleton); break;
                                 case "PT": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 0); break;
                                 case "PK":
                                 case "PB":

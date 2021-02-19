@@ -41,6 +41,44 @@ namespace SPICA.WinForms.Formats
                     OpenFiles++;
                 }
             }
+            // string[] names =
+            // {
+            //     "FightingAction1",
+            //     "FightingAction2",
+            //     "FightingAction4",
+            //     "FightingAction5",
+            //     "FightingAction6",
+            //     "FightingAction9",
+            //     "FightingAction13",
+            //     "FightingAction17",
+            //     "FightingAction18",
+            //     "PetAction1-Pose",
+            //     "PetAction5-Falling Asleep",
+            //     "PetAction6-Sleepy",
+            //     "PetAction7-Sleepy Awaken",
+            //     "PetAction8-Sleeping",
+            //     "PetAction9-Awaken",
+            //     "PetAction10-Refuse",
+            //     "PetAction12-Agree",
+            //     "PetAction13-Happy",
+            //     "PetAction14-Very Happy",
+            //     "PetAction15-Look Around",
+            //     "PetAction17-Comfortable",
+            //     "PetAction19-Sad",
+            //     "PetAction20-Salutate",
+            //     "PetAction22-Angry",
+            //     "PetAction23-Begin Eating",
+            //     "PetAction24-Eating",
+            //     "PetAction25-Eating Finished",
+            //     "PetAction26-No Eating",
+            //     "MapAction1",
+            //     "MapAction3",
+            //     "MapAction4"
+            // };
+            // for (var i = 0; i < Scene.SkeletalAnimations.Count; i++)
+            // {
+            //     Scene.SkeletalAnimations[i].Name = names[i];
+            // }
 
             if (OpenFiles == 0)
             {

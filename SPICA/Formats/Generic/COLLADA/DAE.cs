@@ -449,10 +449,16 @@ namespace SPICA.Formats.Generic.COLLADA
 
                 foreach (H3DTexture Tex in Scene.Textures)
                 {
+                    string dir = "normal-textures";
+                    if (Tex.Name.Contains("tga_1"))
+                    {
+                        dir = "shiny-textures";
+                    }
+                    string fileName = Tex.Name.Replace(".tga_1", ".tga");
                     library_images.Add(new DAEImage()
                     {
                         id        = Tex.Name,
-                        init_from = $"./{Tex.Name}.png"
+                        init_from = $"./{dir}/{fileName}.png"
                     });
                 }
             } //MdlIndex != -1
