@@ -150,7 +150,7 @@ namespace SPICA.WinForms.Formats
 
             return Output;
         }
-        public static H3D IdentifyAndOpen(string FileName, bool DeleteBadAnims, H3DDict<H3DBone> Skeleton = null)
+        public static H3D IdentifyAndOpen(string FileName, int FileIndex, int AnimCount, H3DDict<H3DBone> Skeleton = null)
         {
             //Formats that can by identified by extensions
             string FilePath = Path.GetDirectoryName(FileName);
@@ -227,7 +227,7 @@ namespace SPICA.WinForms.Formats
                                 case "CM": Output = GFCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "GR": Output = GFOWMapModel.OpenAsH3D(FS, PackHeader); break;
                                 case "MM": Output = GFOWCharaModel.OpenAsH3D(FS, PackHeader); break;
-                                case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, DeleteBadAnims, Skeleton); break;
+                                case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, FileIndex, AnimCount, Skeleton); break;
                                 case "PT": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 0); break;
                                 case "PK":
                                 case "PB":

@@ -174,9 +174,9 @@ namespace SPICA.WinForms.Formats
             }
             
         }
-        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, bool DeleteBadAnims, H3DDict<H3DBone> Skeleton = null)
+        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, int FileIndex, int AnimCount, H3DDict<H3DBone> Skeleton = null)
         {
-            bool deleteBadAnims = DeleteBadAnims;
+            int fileIndex = FileIndex;
             H3D Output = default(H3D);
 
             BinaryReader Reader = new BinaryReader(Input);
@@ -292,11 +292,21 @@ namespace SPICA.WinForms.Formats
                             Output.VisibilityAnimations.Add(VisAnim);
                         }
                     }
-
-                    if (Output.SkeletalAnimations.Any() && deleteBadAnims)
+                    // Console.WriteLine(Output.SkeletalAnimations.Count);
+                    // Console.WriteLine(AnimCount);
+                    while (Output.SkeletalAnimations.Count > AnimCount)
                     {
                         Output.SkeletalAnimations.Remove(Output.SkeletalAnimations.Count-1);
                     }
+                    // if (fileIndex == 4)
+                    // {
+                    //     
+                    // }
+                    //todo здесь проверку 
+                    // if (Output.SkeletalAnimations.Any())
+                    // {
+                    //     Output.SkeletalAnimations.Remove(Output.SkeletalAnimations.Count-1);
+                    // }
 
                     break;
 

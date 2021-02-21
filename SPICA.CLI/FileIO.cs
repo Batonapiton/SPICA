@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using SPICA.WinForms;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
@@ -83,6 +84,13 @@ namespace SPICA.CLI
         public static H3D Merge(string[] FileNames, string[] MotionNames, bool DeleteBadAnims, H3D Scene = null)
         {
             string[] motionNames = MotionNames;
+            int fightAnimsCount = motionNames.Count(motion => motion.Contains("Fighting"));
+            // Console.WriteLine("fightAnimsCount " + fightAnimsCount);
+            int petAnimsCount = motionNames.Count(motion => motion.Contains("Pet"));
+            // Console.WriteLine("petAnimsCount " + petAnimsCount);
+            int mapAnimsCount = motionNames.Count(motion => motion.Contains("Map"));
+            // Console.WriteLine("mapAnimsCount " + mapAnimsCount);
+            // Console.WriteLine("FileNames " + FileNames.Length);
             
             if (Scene == null)
             {
@@ -90,14 +98,29 @@ namespace SPICA.CLI
             }
 
             int OpenFiles = 0;
+            int filesOpen = 0;
+            int animCount = 0;
 
             foreach (string FileName in FileNames)
             {
+                filesOpen++;
                 H3DDict<H3DBone> Skeleton = null;
 
                 if (Scene.Models.Count > 0) Skeleton = Scene.Models[0].Skeleton;
-
-                H3D Data = FormatIdentifier.IdentifyAndOpen(FileName, DeleteBadAnims, Skeleton);
+                // Console.WriteLine("Scene.SkeletalAnimations.Count "+Scene.SkeletalAnimations.Count);
+                if (filesOpen == 5)
+                {
+                    animCount = fightAnimsCount;
+                }
+                else if (filesOpen == 6)
+                {
+                    animCount = petAnimsCount;
+                }
+                else if (filesOpen == 7)
+                {
+                    animCount = mapAnimsCount;
+                }
+                H3D Data = FormatIdentifier.IdentifyAndOpen(FileName, filesOpen, animCount, Skeleton);
 
                 if (Data != null)
                 {
@@ -105,10 +128,23 @@ namespace SPICA.CLI
                     OpenFiles++;
                 }
             }
-            for (var i = 0; i < Scene.SkeletalAnimations.Count; i++)
-            {
-                Scene.SkeletalAnimations[i].Name = motionNames[i];
-            }
+
+            // Console.WriteLine(Scene.SkeletalAnimations.Count);
+            // Console.WriteLine(motionNames.Length);
+            // if (Scene.SkeletalAnimations.Count == motionNames.Length)
+            // {
+                for (var i = 0; i < Scene.SkeletalAnimations.Count; i++)
+                {
+                    Scene.SkeletalAnimations[i].Name = motionNames[i];
+                }
+            // }
+            // else
+            // {
+            //     File.WriteAllText("C:\\Users\\User\\Documents\\spice-enchanted\\SPICA\\SPICA.CLI\\bin\\Debug\\net462\\out\\" + CurrentPoke + ".txt",
+            //         CurrentPoke);
+            //
+            // }
+            
             if (OpenFiles == 0)
             {
                 //todo: improve this error message by making the format discovery return some kind of report

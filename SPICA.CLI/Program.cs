@@ -81,7 +81,6 @@ namespace SPICA.CLI
 
                         Console.Write($"Building Scene with files:\n{string.Join("\n", files)}\n");
                         H3D Scene = FileIO.Merge(files, pokemon.animations, pokemon.needDeleteBadAnims);
-                        
                         Console.WriteLine($"Exporting {Scene.Textures.Count} textures");
                         FileIO.ExportTextures(Scene, texturesDir, texturesShinyDir);
                         
@@ -91,8 +90,13 @@ namespace SPICA.CLI
                         // Console.WriteLine($"exporting {pokemonDir}/{Pokemon}.dae model with {motions.Length} motions");
                         // FileIO.ExportDae(Scene, $"{pokemonDir}/{Pokemon}.dae", motions);
                         Console.WriteLine($"exporting {pokemonDir}/{pokemon.name}.dae model with {motions.Length} motions");
+                        
                         FileIO.ExportDae(Scene, $"{pokemonDir}/{pokemon.name}.dae", motions);
-
+                        if (motions.Length == 0)
+                        {
+                            File.AppendAllText("C:\\Users\\User\\Documents\\spice-enchanted\\SPICA\\SPICA.CLI\\bin\\Debug\\net462\\out\\ZeroMotions.txt",
+                                pokemon.name + "\n");
+                        }
                         Console.WriteLine($"completed exports for: {pokemon.name}");
                     }
                 }
