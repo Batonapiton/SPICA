@@ -97,7 +97,7 @@ namespace SPICA.WinForms.Formats
                     Output = new H3D();
 
                     if (Skeleton == null) break;
-                    HashSet<uint> adresses = new HashSet<uint>();
+
                     for (int Index = 0; Index < Header.Entries.Length; Index++)
                     {
                         Input.Seek(Header.Entries[Index].Address, SeekOrigin.Begin);
@@ -114,31 +114,38 @@ namespace SPICA.WinForms.Formats
 
                         if (SklAnim != null)
                         {
-                            // SklAnim.Name = $"Motion_{Mot.Index}";
+                            SklAnim.Name = $"Motion_{Index+1}";
+                                //SklAnim.Name = $"Motion_{Mot.Index}";
 
                             // Output.SkeletalAnimations.Add(SklAnim);
 
-                            if (!adresses.Contains(Header.Entries[Index].Address))
+                            // if (!sklAdresses.Contains(Header.Entries[Index].Address))
+                            if (Header.Entries[Index].Length != 0)
                             {
                                 Output.SkeletalAnimations.Add(SklAnim);
-                                adresses.Add(Header.Entries[Index].Address);
-                                Console.WriteLine(Header.Entries[Index].Address);
                             }
-                            
                         }
 
                         if (MatAnim != null)
                         {
-                            MatAnim.Name = $"Motion_{Mot.Index}";
+                            //MatAnim.Name = $"Motion_{Mot.Index}";
 
-                            Output.MaterialAnimations.Add(MatAnim);
+                            MatAnim.Name = $"Motion_{Index+1}";
+                            if (Header.Entries[Index].Length != 0)
+                            {
+                                Output.MaterialAnimations.Add(MatAnim);
+                            }
                         }
 
                         if (VisAnim != null)
                         {
-                            VisAnim.Name = $"Motion_{Mot.Index}";
+                            //VisAnim.Name = $"Motion_{Mot.Index}";
 
-                            Output.VisibilityAnimations.Add(VisAnim);
+                            VisAnim.Name = $"Motion_{Index+1}";
+                            if (Header.Entries[Index].Length != 0)
+                            {
+                                Output.VisibilityAnimations.Add(VisAnim);
+                            }
                         }
                     }
 
@@ -249,7 +256,9 @@ namespace SPICA.WinForms.Formats
                     Output = new H3D();
 
                     if (Skeleton == null) break;
-                    HashSet<uint> adresses = new HashSet<uint>();
+                    HashSet<uint> sklAdresses = new HashSet<uint>();
+                    HashSet<uint> materialAdresses = new HashSet<uint>();
+                    HashSet<uint> visibilityAdresses = new HashSet<uint>();
                     for (int Index = 0; Index < Header.Entries.Length; Index++)
                     {
                         Input.Seek(Header.Entries[Index].Address, SeekOrigin.Begin);
@@ -270,26 +279,37 @@ namespace SPICA.WinForms.Formats
 
                             // Output.SkeletalAnimations.Add(SklAnim);
 
-                            if (!adresses.Contains(Header.Entries[Index].Address))
+                            if (!sklAdresses.Contains(Header.Entries[Index].Address))
                             {
                                 Output.SkeletalAnimations.Add(SklAnim);
-                                adresses.Add(Header.Entries[Index].Address);
-                                Console.WriteLine(Header.Entries[Index].Address);
+                                sklAdresses.Add(Header.Entries[Index].Address);
+                                Console.WriteLine("skeletal " + Header.Entries[Index].Address);
                             }
                         }
 
                         if (MatAnim != null)
                         {
-                            MatAnim.Name = $"Motion_{Mot.Index}";
+                            //MatAnim.Name = $"Motion_{Mot.Index}";
 
-                            Output.MaterialAnimations.Add(MatAnim);
+                            if (!materialAdresses.Contains(Header.Entries[Index].Address))
+                            {
+                                Output.MaterialAnimations.Add(MatAnim);
+                                materialAdresses.Add(Header.Entries[Index].Address);
+                                Console.WriteLine("material " +Header.Entries[Index].Address);
+                            }
                         }
 
                         if (VisAnim != null)
                         {
-                            VisAnim.Name = $"Motion_{Mot.Index}";
+                            //VisAnim.Name = $"Motion_{Mot.Index}";
 
                             Output.VisibilityAnimations.Add(VisAnim);
+                            if (!visibilityAdresses.Contains(Header.Entries[Index].Address))
+                            {
+                                Output.VisibilityAnimations.Add(VisAnim);
+                                visibilityAdresses.Add(Header.Entries[Index].Address);
+                                Console.WriteLine("visibility " +Header.Entries[Index].Address);
+                            }
                         }
                     }
                     // Console.WriteLine(Output.SkeletalAnimations.Count);
